@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Malla Curricular de Lau - Publi</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8f9fa; /* Un fondo muy claro y neutro */
+        }
+        .course-card {
+            border-radius: 0.75rem;
+            padding: 1.25rem 1rem;
+            margin-top: 0.5rem;
+            cursor: pointer;
+            transition: transform 0.2s ease-out, box-shadow 0.2s ease-out, background-color 0.2s ease-out;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            min-height: 90px;
+            color: #1a202c;
+        }
+        /* Efecto de "desprender" al pasar el mouse */
+        .course-card:not(.locked):hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.15), 0 4px 6px -2px rgb(0 0 0 / 0.1);
+        }
+        /* Estilo para ramos APROBADOS (tachados) */
+        .course-card.approved {
+            background-color: #e2e8f0 !important; /* Gris de completado */
+            color: #4a5568;
+            text-decoration: line-through;
+            text-decoration-thickness: 2px;
+        }
+        /* Estilo para ramos BLOQUEADOS (prerrequisito no cumplido) */
+        .course-card.locked {
+            background-color: #f1f5f9; /* Gris pastel de bloqueado */
+            color: #94a3b8;
+            cursor: not-allowed;
+            box-shadow: none;
+            border: 1px dashed #cbd5e1;
+        }
+        .course-name {
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+        .course-code {
+            font-size: 0.75rem;
+            opacity: 0.7;
+            margin-top: 0.25rem;
+        }
+        /* --- Paleta de Colores Pastel para Semestres --- */
+        .sem-1-color { background-color: #fecaca; } /* Rojo Pastel */
+        .sem-2-color { background-color: #fed7aa; } /* Naranja Pastel */
+        .sem-3-color { background-color: #fef08a; } /* Amarillo Pastel */
+        .sem-4-color { background-color: #bbf7d0; } /* Verde Pastel */
+        .sem-5-color { background-color: #a5f3fc; } /* Cian Pastel */
+        .sem-6-color { background-color: #bfdbfe; } /* Azul Pastel */
+        .sem-7-color { background-color: #ddd6fe; } /* Violeta Pastel */
+        .sem-8-color { background-color: #fbcfe8; } /* Rosa Pastel */
+        .practica-color { background-color: #d1d5db; } /* Gris para Práctica */
+
+        .year-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #374151;
+            text-align: center;
+            margin-bottom: 1rem;
+            grid-column: span 1;
+        }
+        .semester-column {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        .semester-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #4b5563;
+            text-align: center;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #e5e7eb;
+        }
+    </style>
+</head>
+<body class="flex flex-col items-center p-4 sm:p-6 md:p-8">
+
+    <div class="w-full max-w-screen-xl">
+        <header class="text-center mb-12">
+            <h1 class="text-4xl font-bold text-gray-800">Malla Curricular de Lau - Publi</h1>
+            <p class="text-lg text-gray-600 mt-2">Haz clic en un ramo para marcarlo o desmarcarlo.</p>
+        </header>
+
+        <main>
+            <div class="grid grid-cols-4 gap-x-6 gap-y-8">
+                <!-- Fila 1: Títulos de Año -->
+                <h2 class="year-title">I AÑO</h2>
+                <h2 class="year-title">II AÑO</h2>
+                <h2 class="year-title">III AÑO</h2>
+                <h2 class="year-title">IV AÑO</h2>
+
+                <!-- Fila 2: Semestres Impares -->
+                <div class="semester-column"><h3 class="semester-title">SEMESTRE 1</h3><div id="sem-1"></div></div>
+                <div class="semester-column"><h3 class="semester-title">SEMESTRE 3</h3><div id="sem-3"></div></div>
+                <div class="semester-column"><h3 class="semester-title">SEMESTRE 5</h3><div id="sem-5"></div></div>
+                <div class="semester-column"><h3 class="semester-title">SEMESTRE 7</h3><div id="sem-7"></div></div>
+
+                <!-- Fila 3: Semestres Pares -->
+                <div class="semester-column"><h3 class="semester-title">SEMESTRE 2</h3><div id="sem-2"></div></div>
+                <div class="semester-column"><h3 class="semester-title">SEMESTRE 4</h3><div id="sem-4"></div></div>
+                <div class="semester-column"><h3 class="semester-title">SEMESTRE 6</h3><div id="sem-6"></div></div>
+                <div class="semester-column"><h3 class="semester-title">SEMESTRE 8</h3><div id="sem-8"></div></div>
+            </div>
+        </main>
+        
+        <footer class="mt-16">
+             <h2 class="text-2xl font-bold text-center text-gray-700 mb-4">Etapa Final</h2>
+             <div class="max-w-xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-4" id="practica"></div>
+        </footer>
+    </div>
+
+    <script>
+        const approvedCoursesKey = 'approvedCourses_pub2019_v5';
+
+        // Estructura de datos con prerrequisitos mapeados
+        const curriculum = {
+            1: [
+                { name: 'Fundamentos de la Comunicación', code: 'CMVN 1101', prereqs: [] },
+                { name: 'Lenguaje y Redacción', code: 'CMVN 1110', prereqs: [] },
+                { name: 'Historia del Mundo Contemporáneo', code: 'CMVN 1100', prereqs: [] },
+                { name: 'Arte e Ideas', code: 'CMVN 1140', prereqs: [] },
+                { name: 'Discurso y Argumentación', code: 'CMVN 1102', prereqs: [] },
+                { name: 'Publicidad I', code: 'PUB 1101', prereqs: [] },
+                { name: 'Antropología', code: 'CMVN 1160', prereqs: [] },
+            ],
+            2: [
+                { name: 'Escritura y Estilo', code: 'CMVN 1210', prereqs: [] },
+                { name: 'Instituciones Políticas y Económicas', code: 'CMVN 1201', prereqs: [] },
+                { name: 'Chile Contemporáneo I', code: 'CMVN 1202', prereqs: [] },
+                { name: 'Dirección de Fotografía', code: 'CMVN 1203', prereqs: [] },
+                { name: 'Ficción Literaria y Cinematográfica', code: 'CMVN 1200', prereqs: [] },
+                { name: 'Publicidad II', code: 'PUB 1201', prereqs: ['PUB 1101'] },
+                { name: 'Teología I', code: 'FFM 1100', prereqs: [] },
+            ],
+            3: [
+                { name: 'Teoría de la Comunicación', code: 'CMVN 2100', prereqs: [] },
+                { name: 'Creatividad I', code: 'PUB 2101', prereqs: [] },
+                { name: 'Contenido I', code: 'CMVN 2102', prereqs: [] },
+                { name: 'Chile Contemporáneo II', code: 'CMVN 2101', prereqs: [] },
+                { name: 'Marketing I', code: 'PUB 2110', prereqs: [] },
+                { name: 'Introducción a la Economía', code: 'CMVN 2150', prereqs: [] },
+                { name: 'Ética', code: 'CMVN 2160', prereqs: ['CMVN 1160'] },
+                { name: 'Minor I', code: 'MINOR_1', prereqs: [] },
+            ],
+            4: [
+                { name: 'Opinión Pública', code: 'CMVN 2200', prereqs: [] },
+                { name: 'Creatividad II', code: 'PUB 2201', prereqs: ['PUB 2101'] },
+                { name: 'Contenido II', code: 'CMVN 2201', prereqs: [] },
+                { name: 'Pensamiento Contemporáneo', code: 'CMVN 2220', prereqs: [] },
+                { name: 'Marketing Estratégico', code: 'PUB 2202', prereqs: ['PUB 2110'] },
+                { name: 'Teología II', code: 'FFM 2100', prereqs: [] },
+                { name: 'Minor II', code: 'MINOR_2', prereqs: [] },
+            ],
+            5: [
+                { name: 'Sociología del Consumidor', code: 'PUB 3101', prereqs: [] },
+                { name: 'Dirección de Arte', code: 'PUB 3240', prereqs: [] },
+                { name: 'Guiones', code: 'PUB 3110', prereqs: ['CMVN 1110'] },
+                { name: 'Ética y Publicidad', code: 'PUB 3102', prereqs: ['CMVN 2160'] },
+                { name: 'Planificación de Medios', code: 'PUB 3103', prereqs: [] },
+                { name: 'Branding Estratégico', code: 'PUB 3130', prereqs: [] },
+                { name: 'Empresa de la Comunicación', code: 'CMVN 3130', prereqs: [] },
+                { name: 'Teología III', code: 'TEO_3', prereqs: [] },
+            ],
+            6: [
+                { name: 'Comportamiento del Consumidor', code: 'PUB 3100', prereqs: [] },
+                { name: 'Creatividad III', code: 'PUB 3201', prereqs: ['PUB 2201'] },
+                { name: 'Marketing Digital', code: 'PUB 3250', prereqs: ['PUB 2202'] },
+                { name: 'Derecho y Publicidad', code: 'PUB 3220', prereqs: [] },
+                { name: 'Narrativa Multimedia', code: 'CMVN 3202', prereqs: [] },
+                { name: 'Dirección de Cuentas', code: 'PUB 3202', prereqs: [] },
+                { name: 'Gestión', code: 'CMVN 3230', prereqs: [] },
+            ],
+            7: [
+                { name: 'Comunicación Estratégica', code: 'PUB 4101', prereqs: [] },
+                { name: 'BootCamp', code: 'PUB 4102', prereqs: ['PUB 3201', 'PUB 3130'] },
+                { name: 'Sociedad y Tendencias', code: 'CMVN 4120', prereqs: [] },
+                { name: 'Optativo', code: 'OPTATIVO', prereqs: ['SEMESTERS_1_4'] },
+                { name: 'Producción Audiovisual', code: 'PUB 4103', prereqs: [] },
+                { name: 'Investigación de Audiencias', code: 'CMVN 4110', prereqs: ['CMVN 3230'] },
+                { name: 'Minor III', code: 'MINOR_3', prereqs: [] },
+                { name: 'PEG I Ciencias', code: 'PEG_1', prereqs: [] },
+            ],
+            8: [
+                { name: 'Comunicación de Marketing Integral', code: 'PUB 4200', prereqs: [] },
+                { name: 'Innovación', code: 'PUB 4201', prereqs: [] },
+                { name: 'Cultura y Entorno Digital', code: 'CMVN 4201', prereqs: [] },
+                { name: 'Clínica de Casos', code: 'PUB 4230', prereqs: [] },
+                { name: 'Planning', code: 'PUB 4202', prereqs: [] },
+                { name: 'Proyecto', code: 'PUB 4203', prereqs: ['CMVN 4110', 'PUB 4102'] },
+                { name: 'PEG II Arte y Lit', code: 'PEG_2', prereqs: [] },
+            ],
+            practica: [
+                { name: 'Defensa de Proyecto', code: 'DEFENSA', prereqs: ['ALL_SEMESTERS_1_8'] },
+                { name: 'Práctica Profesional', code: 'PUB 4510', prereqs: ['SEMESTERS_1_6_BOOTCAMP'] }
+            ]
+        };
+        
+        function getApprovedCourses() { return JSON.parse(localStorage.getItem(approvedCoursesKey) || '[]'); }
+
+        function arePrereqsMet(courseCode, approvedCourses) {
+            const course = Object.values(curriculum).flat().find(c => c.code === courseCode);
+            if (!course || !course.prereqs || course.prereqs.length === 0) return true;
+            for (const prereq of course.prereqs) {
+                if (prereq === 'SEMESTERS_1_4') {
+                    const sems1to4 = [...curriculum[1], ...curriculum[2], ...curriculum[3], ...curriculum[4]].map(c => c.code);
+                    if (!sems1to4.every(c => approvedCourses.includes(c))) return false;
+                } else if (prereq === 'SEMESTERS_1_6_BOOTCAMP') {
+                    const sems1to6 = [...curriculum[1], ...curriculum[2], ...curriculum[3], ...curriculum[4], ...curriculum[5], ...curriculum[6]].map(c => c.code);
+                    if (!sems1to6.every(c => approvedCourses.includes(c))) return false;
+                    if (!approvedCourses.includes('PUB 4102')) return false;
+                } else if (prereq === 'ALL_SEMESTERS_1_8') {
+                    const allCourses = [...curriculum[1], ...curriculum[2], ...curriculum[3], ...curriculum[4], ...curriculum[5], ...curriculum[6], ...curriculum[7], ...curriculum[8]].map(c => c.code);
+                    if (!allCourses.every(c => approvedCourses.includes(c))) return false;
+                } else {
+                    if (!approvedCourses.includes(prereq)) return false;
+                }
+            }
+            return true;
+        }
+
+        function createCourseCard(course) {
+            const card = document.createElement('div');
+            card.dataset.code = course.code;
+            card.classList.add('course-card');
+            card.innerHTML = `<span class="course-name">${course.name}</span><span class="course-code">${course.code.includes('_') ? '' : course.code}</span>`;
+            card.addEventListener('click', () => {
+                if (!card.classList.contains('locked')) {
+                    toggleApproved(course.code);
+                }
+            });
+            return card;
+        }
+
+        function toggleApproved(courseCode) {
+            let approvedCourses = getApprovedCourses();
+            const index = approvedCourses.indexOf(courseCode);
+            if (index > -1) {
+                approvedCourses.splice(index, 1); // Quitar ramo si ya está aprobado
+            } else {
+                approvedCourses.push(courseCode); // Agregar ramo si no está
+            }
+            localStorage.setItem(approvedCoursesKey, JSON.stringify(approvedCourses));
+            updateAllCardStates();
+        }
+
+        function updateAllCardStates() {
+            const approvedCourses = getApprovedCourses();
+            const semesterColors = ['sem-1-color', 'sem-2-color', 'sem-3-color', 'sem-4-color', 'sem-5-color', 'sem-6-color', 'sem-7-color', 'sem-8-color'];
+            document.querySelectorAll('.course-card').forEach(card => {
+                const code = card.dataset.code;
+                const semester = card.dataset.semester;
+                card.className = 'course-card'; // Reset classes
+                card.dataset.semester = semester;
+                if (approvedCourses.includes(code)) {
+                    card.classList.add('approved');
+                } else if (arePrereqsMet(code, approvedCourses)) {
+                    if (semester === 'practica') { card.classList.add('practica-color'); } 
+                    else { card.classList.add(semesterColors[parseInt(semester) - 1]); }
+                } else {
+                    card.classList.add('locked');
+                }
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            for (const semester in curriculum) {
+                const container = document.getElementById(semester === 'practica' ? 'practica' : `sem-${semester}`);
+                if (container) {
+                    curriculum[semester].forEach(course => {
+                        const card = createCourseCard(course);
+                        card.dataset.semester = semester;
+                        container.appendChild(card);
+                    });
+                }
+            }
+            updateAllCardStates();
+        });
+    </script>
+</body>
+</html>
